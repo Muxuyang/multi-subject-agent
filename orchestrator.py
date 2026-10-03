@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from aip_models import TaskResult, SenderRole, TaskStatus, TaskState, Product, TextDataItem
+from aip_models import TaskResult, SenderRole, TaskStatus, TaskState, Product, TextDataItem, TaskCommand
 from openai import OpenAI
 import asyncio
 from typing import List, Dict, Tuple, Optional
