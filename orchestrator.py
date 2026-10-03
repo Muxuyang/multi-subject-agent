@@ -114,11 +114,11 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
     agent_config = AGENTS[subject]
 
     command = TaskCommand(
-        sender_role=SenderRole.LEADER,
-        sender_id="orchestrator",
+        senderRole=SenderRole.LEADER,
+        senderId="orchestrator",
         command=CommandType.START,
-        task_id=f"{task_id}_{subject}",
-        input_text=question
+        taskId=f"{task_id}_{subject}",
+        dataItems=[{"type": "text", "text": question}]
     )
 
     try:
