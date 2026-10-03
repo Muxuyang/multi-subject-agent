@@ -137,11 +137,17 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
 
         answer = response.choices[0].message.content
 
-        # 创建产出物
+        # 创建产出物（符合ACPs Product标准）
         product = Product(
-            title=f"{agent_config['name']}角度分析",
-            content=answer,
-            confidence=0.85
+            id=f"{agent_id}_{task_id}",
+            name=f"{agent_config['name']}角度分析",
+            dataItems=[
+                {
+                    "type": "text",
+                    "content": answer,
+                    "confidence": 0.85
+                }
+            ]
         )
 
         # 返回TaskResult
@@ -239,9 +245,14 @@ async def ask_question(request: QuestionRequest):
     subject_answers = {}
     for subject, result in results.items():
         if result.products and len(result.products) > 0:
-            subject_answers[AGENTS[subject]["name"]] = result.products[0].content
+            # products是字典列表，从dataItems中提取content
+            product_dict = result.products[0]
+            if 'dataItems' in product_dict and len(product_dict['dataItems']) > 0:
+                subject_answers[AGENTS[subject]["name"]] = product_dict['dataItems'][0]['content']
+            else:
+                subject_answers[AGENTS[subject]["name"]] = "[无内容]"
         else:
-            subject_answers[AGENTS[subject]["name"]] = f"[{result.taskStatus.message}]"
+            subject_answers[AGENTS[subject]["name"]] = f"[{result.status['message']}]"
 
     # 4. 协商融合答案
     negotiated_answer = await negotiate_answers(question, results)
