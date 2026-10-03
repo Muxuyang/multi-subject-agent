@@ -1,4 +1,8 @@
-INFO:     Started server process [29396]
+INFO:     Started server process [39588]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+math agent starting on port 8001
+INFO:     127.0.0.1:54574 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54637 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54694 - "GET /health HTTP/1.1" 200 OK

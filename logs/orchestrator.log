@@ -1,6 +1,167 @@
-INFO:     Started server process [28196]
+INFO:     Started server process [23860]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 Orchestrator starting on port 8000
-INFO:     127.0.0.1:57969 - "GET /acs/metadata HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54568 - "GET /static/index.html HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54568 - "GET /agents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54569 - "GET /agents HTTP/1.1" 200 OK
+Building prefix dict from the default dictionary ...
+Loading model from cache C:\Users\21334\AppData\Local\Temp\jieba.cache
+Loading model cost 1.017 seconds.
+Prefix dict has been built successfully.
+馃搵 闂娑夊強瀛︾: ['鏁板', '鐗╃悊', '鍖栧', '鐢熺墿']
+INFO:     127.0.0.1:54569 - "POST /ask HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 406, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    raise exc
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    raise exc
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\fastapi\routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\orchestrator.py", line 207, in ask_question
+    results_list = await asyncio.gather(*tasks)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\orchestrator.py", line 116, in call_agent
+    command = TaskCommand(
+        sender_role=SenderRole.LEADER,
+    ...<3 lines>...
+        input_text=question
+    )
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\pydantic\main.py", line 211, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for TaskCommand
+senderRole
+  Field required [type=missing, input_value={'sender_role': <SenderRo...用的化学方程式'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.9/v/missing
+senderId
+  Field required [type=missing, input_value={'sender_role': <SenderRo...用的化学方程式'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.9/v/missing
+taskId
+  Field required [type=missing, input_value={'sender_role': <SenderRo...用的化学方程式'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.9/v/missing
+馃搵 闂娑夊強瀛︾: ['鏁板', '鐗╃悊', '鍖栧', '鐢熺墿']
+INFO:     127.0.0.1:54570 - "POST /ask HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 406, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    raise exc
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    raise exc
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\fastapi\routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\orchestrator.py", line 207, in ask_question
+    results_list = await asyncio.gather(*tasks)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\orchestrator.py", line 116, in call_agent
+    command = TaskCommand(
+        sender_role=SenderRole.LEADER,
+    ...<3 lines>...
+        input_text=question
+    )
+  File "C:\Users\21334\Desktop\AIC竞赛\code\multi-subject-agent\venv\Lib\site-packages\pydantic\main.py", line 211, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for TaskCommand
+senderRole
+  Field required [type=missing, input_value={'sender_role': <SenderRo...用的化学方程式'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.9/v/missing
+senderId
+  Field required [type=missing, input_value={'sender_role': <SenderRo...用的化学方程式'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.9/v/missing
+taskId
+  Field required [type=missing, input_value={'sender_role': <SenderRo...用的化学方程式'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.9/v/missing
+INFO:     127.0.0.1:54687 - "GET /agents HTTP/1.1" 200 OK

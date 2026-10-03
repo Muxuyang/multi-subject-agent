@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from aip_models import TaskCommand, TaskResult, CommandType, SenderRole, TaskStatus, TaskStatusType, Product, TextDataItem
+from aip_models import TaskResult, SenderRole, TaskStatus, TaskState, Product, TextDataItem
 from openai import OpenAI
 import asyncio
 from typing import List, Dict, Tuple, Optional
@@ -142,11 +142,7 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
             id=f"{agent_id}_{task_id}",
             name=f"{agent_config['name']}角度分析",
             dataItems=[
-                {
-                    "type": "text",
-                    "content": answer,
-                    "confidence": 0.85
-                }
+                TextDataItem(text=answer)
             ]
         )
 
@@ -156,9 +152,9 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
             senderId=agent_id,
             taskId=f"{task_id}_{subject}",
             status=TaskStatus(
-                state=TaskStatusType.AWAITING_COMPLETION,
-                message=f"{agent_config['name']}智能体已完成分析"
-            ).model_dump(),
+                state=TaskState.COMPLETED,
+                dataItems=[TextDataItem(text=f"{agent_config['name']}智能体已完成分析")]
+            ),
             products=[product]
         )
 
@@ -172,9 +168,9 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
             senderId=agent_id,
             taskId=f"{task_id}_{subject}",
             status=TaskStatus(
-                state=TaskStatusType.FAILED,
-                message=f"生成答案失败: {str(e)}"
-            ).model_dump(),
+                state=TaskState.FAILED,
+                dataItems=[TextDataItem(text=f"生成答案失败: {str(e)}")]
+            ),
             products=[]
         )
         return (subject, result)
@@ -197,15 +193,22 @@ async def negotiate_answers(question: str, results: Dict[str, TaskResult]) -> st
     if len(valid_results) == 1:
         # 只有一个智能体，直接返回其答案
         subject = list(valid_results.keys())[0]
-        return valid_results[subject].products[0].content
+        product = valid_results[subject].products[0]
+        if product.dataItems and len(product.dataItems) > 0:
+            first_item = product.dataItems[0]
+            return first_item.text if hasattr(first_item, 'text') else "无法提取答案"
+        return "无法提取答案"
 
     # 多智能体协商：拼接答案，标注来源
     negotiated = f"【综合分析】针对问题「{question}」，各学科智能体协商结果如下：\n\n"
 
     for subject, result in valid_results.items():
         agent_name = AGENTS[subject]["name"]
-        answer = result.products[0].content
-        negotiated += f"## {agent_name}角度\n{answer}\n\n"
+        product = result.products[0]
+        if product.dataItems and len(product.dataItems) > 0:
+            first_item = product.dataItems[0]
+            answer = first_item.text if hasattr(first_item, 'text') else "无法提取答案"
+            negotiated += f"## {agent_name}角度\n{answer}\n\n"
 
     # 添加协商总结
     negotiated += "---\n💡 **协商总结**：以上是各学科智能体基于各自专业视角的分析。"
@@ -245,14 +248,27 @@ async def ask_question(request: QuestionRequest):
     subject_answers = {}
     for subject, result in results.items():
         if result.products and len(result.products) > 0:
-            # products是字典列表，从dataItems中提取content
-            product_dict = result.products[0]
-            if 'dataItems' in product_dict and len(product_dict['dataItems']) > 0:
-                subject_answers[AGENTS[subject]["name"]] = product_dict['dataItems'][0]['content']
+            # products现在是Product对象列表
+            product = result.products[0]
+            if product.dataItems and len(product.dataItems) > 0:
+                # dataItems是DataItem对象列表，取第一个TextDataItem的text
+                first_item = product.dataItems[0]
+                if hasattr(first_item, 'text'):
+                    subject_answers[AGENTS[subject]["name"]] = first_item.text
+                else:
+                    subject_answers[AGENTS[subject]["name"]] = "[无文本内容]"
             else:
                 subject_answers[AGENTS[subject]["name"]] = "[无内容]"
         else:
-            subject_answers[AGENTS[subject]["name"]] = f"[{result.status['message']}]"
+            # status.dataItems中提取错误信息
+            if result.status.dataItems and len(result.status.dataItems) > 0:
+                first_item = result.status.dataItems[0]
+                if hasattr(first_item, 'text'):
+                    subject_answers[AGENTS[subject]["name"]] = f"[{first_item.text}]"
+                else:
+                    subject_answers[AGENTS[subject]["name"]] = f"[{result.status.state}]"
+            else:
+                subject_answers[AGENTS[subject]["name"]] = f"[{result.status.state}]"
 
     # 4. 协商融合答案
     negotiated_answer = await negotiate_answers(question, results)
@@ -328,9 +344,9 @@ async def aip_rpc_handler(command: TaskCommand):
                     senderId="orchestrator",
                     taskId=command.taskId,
                     status=TaskStatus(
-                        state=TaskStatusType.FAILED,
-                        message="未找到有效的问题文本"
-                    ).model_dump(),
+                        state=TaskState.FAILED,
+                        dataItems=[TextDataItem(text="未找到有效的问题文本")]
+                    ),
                     products=[]
                 )
 
@@ -345,9 +361,9 @@ async def aip_rpc_handler(command: TaskCommand):
 
             # 返回AIP格式结果
             product = Product(
-                title="多学科协商答案",
-                content=negotiated_answer,
-                confidence=0.9
+                id=f"orchestrator_{command.taskId}",
+                name="多学科协商答案",
+                dataItems=[TextDataItem(text=negotiated_answer)]
             )
 
             return TaskResult(
@@ -355,9 +371,9 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderId="orchestrator",
                 taskId=command.taskId,
                 status=TaskStatus(
-                    state=TaskStatusType.AWAITING_COMPLETION,
-                    message="协商完成"
-                ).model_dump(),
+                    state=TaskState.COMPLETED,
+                    dataItems=[TextDataItem(text="协商完成")]
+                ),
                 products=[product]
             )
 
@@ -368,9 +384,9 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderId="orchestrator",
                 taskId=command.taskId,
                 status=TaskStatus(
-                    state=TaskStatusType.COMPLETED,
-                    message="任务已完成"
-                ).model_dump(),
+                    state=TaskState.COMPLETED,
+                    dataItems=[TextDataItem(text="任务已完成")]
+                ),
                 products=[]
             )
 
@@ -381,9 +397,9 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderId="orchestrator",
                 taskId=command.taskId,
                 status=TaskStatus(
-                    state=TaskStatusType.WORKING,
-                    message="任务进行中"
-                ).model_dump(),
+                    state=TaskState.WORKING,
+                    dataItems=[TextDataItem(text="任务进行中")]
+                ),
                 products=[]
             )
 
@@ -394,9 +410,9 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderId="orchestrator",
                 taskId=command.taskId,
                 status=TaskStatus(
-                    state=TaskStatusType.REJECTED,
-                    message=f"不支持的命令: {command.command}"
-                ).model_dump(),
+                    state=TaskState.REJECTED,
+                    dataItems=[TextDataItem(text=f"不支持的命令: {command.command}")]
+                ),
                 products=[]
             )
 
@@ -406,9 +422,9 @@ async def aip_rpc_handler(command: TaskCommand):
             senderId="orchestrator",
             taskId=command.taskId,
             status=TaskStatus(
-                state=TaskStatusType.FAILED,
-                message=f"处理失败: {str(e)}"
-            ).model_dump(),
+                state=TaskState.FAILED,
+                dataItems=[TextDataItem(text=f"处理失败: {str(e)}")]
+            ),
             products=[]
         )
 

@@ -1,4 +1,8 @@
-INFO:     Started server process [27960]
+INFO:     Started server process [27884]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+chinese agent starting on port 8006
+INFO:     127.0.0.1:54587 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54648 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54709 - "GET /health HTTP/1.1" 200 OK

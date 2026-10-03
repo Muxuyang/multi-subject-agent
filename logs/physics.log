@@ -1,4 +1,8 @@
-INFO:     Started server process [28844]
+INFO:     Started server process [29608]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8002 (Press CTRL+C to quit)
+physics agent starting on port 8002
+INFO:     127.0.0.1:54576 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54639 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54697 - "GET /health HTTP/1.1" 200 OK
