@@ -149,10 +149,10 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
             senderRole=SenderRole.PARTNER,
             senderId=agent_id,
             taskId=f"{task_id}_{subject}",
-            taskStatus=TaskStatus(
+            status=TaskStatus(
                 state=TaskStatusType.AWAITING_COMPLETION,
                 message=f"{agent_config['name']}智能体已完成分析"
-            ),
+            ).model_dump(),
             products=[product]
         )
 
@@ -165,10 +165,10 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
             senderRole=SenderRole.PARTNER,
             senderId=agent_id,
             taskId=f"{task_id}_{subject}",
-            taskStatus=TaskStatus(
+            status=TaskStatus(
                 state=TaskStatusType.FAILED,
                 message=f"生成答案失败: {str(e)}"
-            ),
+            ).model_dump(),
             products=[]
         )
         return (subject, result)
@@ -316,10 +316,10 @@ async def aip_rpc_handler(command: TaskCommand):
                     senderRole=SenderRole.PARTNER,
                     senderId="orchestrator",
                     taskId=command.taskId,
-                    taskStatus=TaskStatus(
+                    status=TaskStatus(
                         state=TaskStatusType.FAILED,
                         message="未找到有效的问题文本"
-                    ),
+                    ).model_dump(),
                     products=[]
                 )
 
@@ -343,10 +343,10 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderRole=SenderRole.PARTNER,
                 senderId="orchestrator",
                 taskId=command.taskId,
-                taskStatus=TaskStatus(
+                status=TaskStatus(
                     state=TaskStatusType.AWAITING_COMPLETION,
                     message="协商完成"
-                ),
+                ).model_dump(),
                 products=[product]
             )
 
@@ -356,10 +356,10 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderRole=SenderRole.PARTNER,
                 senderId="orchestrator",
                 taskId=command.taskId,
-                taskStatus=TaskStatus(
+                status=TaskStatus(
                     state=TaskStatusType.COMPLETED,
                     message="任务已完成"
-                ),
+                ).model_dump(),
                 products=[]
             )
 
@@ -369,10 +369,10 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderRole=SenderRole.PARTNER,
                 senderId="orchestrator",
                 taskId=command.taskId,
-                taskStatus=TaskStatus(
+                status=TaskStatus(
                     state=TaskStatusType.WORKING,
                     message="任务进行中"
-                ),
+                ).model_dump(),
                 products=[]
             )
 
@@ -382,10 +382,10 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderRole=SenderRole.PARTNER,
                 senderId="orchestrator",
                 taskId=command.taskId,
-                taskStatus=TaskStatus(
+                status=TaskStatus(
                     state=TaskStatusType.REJECTED,
                     message=f"不支持的命令: {command.command}"
-                ),
+                ).model_dump(),
                 products=[]
             )
 
@@ -394,10 +394,10 @@ async def aip_rpc_handler(command: TaskCommand):
             senderRole=SenderRole.PARTNER,
             senderId="orchestrator",
             taskId=command.taskId,
-            taskStatus=TaskStatus(
+            status=TaskStatus(
                 state=TaskStatusType.FAILED,
                 message=f"处理失败: {str(e)}"
-            ),
+            ).model_dump(),
             products=[]
         )
 
