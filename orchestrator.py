@@ -24,7 +24,7 @@ load_dotenv()
 # 初始化智谱AI客户端
 llm_client = OpenAI(
     api_key=os.getenv("ZHIPU_API_KEY"),
-    base_url="https://open.bigmodel.cn/api/paas/v4/"
+    base_url="https://open.bigmodel.cn/api/paas/v4"
 )
 LLM_MODEL = "glm-4-flash"  # 智谱AI的快速模型
 
@@ -150,7 +150,7 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
             senderId=agent_id,
             taskId=f"{task_id}_{subject}",
             taskStatus=TaskStatus(
-                status=TaskStatusType.AWAITING_COMPLETION,
+                state=TaskStatusType.AWAITING_COMPLETION,
                 message=f"{agent_config['name']}智能体已完成分析"
             ),
             products=[product]
@@ -166,7 +166,7 @@ async def call_agent(subject: str, question: str, task_id: str) -> Tuple[str, Ta
             senderId=agent_id,
             taskId=f"{task_id}_{subject}",
             taskStatus=TaskStatus(
-                status=TaskStatusType.FAILED,
+                state=TaskStatusType.FAILED,
                 message=f"生成答案失败: {str(e)}"
             ),
             products=[]
@@ -317,7 +317,7 @@ async def aip_rpc_handler(command: TaskCommand):
                     senderId="orchestrator",
                     taskId=command.taskId,
                     taskStatus=TaskStatus(
-                        status=TaskStatusType.FAILED,
+                        state=TaskStatusType.FAILED,
                         message="未找到有效的问题文本"
                     ),
                     products=[]
@@ -344,7 +344,7 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderId="orchestrator",
                 taskId=command.taskId,
                 taskStatus=TaskStatus(
-                    status=TaskStatusType.AWAITING_COMPLETION,
+                    state=TaskStatusType.AWAITING_COMPLETION,
                     message="协商完成"
                 ),
                 products=[product]
@@ -357,7 +357,7 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderId="orchestrator",
                 taskId=command.taskId,
                 taskStatus=TaskStatus(
-                    status=TaskStatusType.COMPLETED,
+                    state=TaskStatusType.COMPLETED,
                     message="任务已完成"
                 ),
                 products=[]
@@ -370,7 +370,7 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderId="orchestrator",
                 taskId=command.taskId,
                 taskStatus=TaskStatus(
-                    status=TaskStatusType.WORKING,
+                    state=TaskStatusType.WORKING,
                     message="任务进行中"
                 ),
                 products=[]
@@ -383,7 +383,7 @@ async def aip_rpc_handler(command: TaskCommand):
                 senderId="orchestrator",
                 taskId=command.taskId,
                 taskStatus=TaskStatus(
-                    status=TaskStatusType.REJECTED,
+                    state=TaskStatusType.REJECTED,
                     message=f"不支持的命令: {command.command}"
                 ),
                 products=[]
@@ -395,7 +395,7 @@ async def aip_rpc_handler(command: TaskCommand):
             senderId="orchestrator",
             taskId=command.taskId,
             taskStatus=TaskStatus(
-                status=TaskStatusType.FAILED,
+                state=TaskStatusType.FAILED,
                 message=f"处理失败: {str(e)}"
             ),
             products=[]
