@@ -241,7 +241,7 @@ async def ask_question(request: QuestionRequest):
         if result.products and len(result.products) > 0:
             subject_answers[AGENTS[subject]["name"]] = result.products[0].content
         else:
-            subject_answers[AGENTS[subject]["name"]] = f"[{result.task_status.message}]"
+            subject_answers[AGENTS[subject]["name"]] = f"[{result.taskStatus.message}]"
 
     # 4. 协商融合答案
     negotiated_answer = await negotiate_answers(question, results)
