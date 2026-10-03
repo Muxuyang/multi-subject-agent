@@ -1,0 +1,32 @@
+{
+  "name": "multi-subject-tutor",
+  "version": "1.0.0",
+  "description": "多学科智能体协商辅导系统，支持数学、物理、化学、生物、英语、语文六大学科的跨学科问题协商解答",
+  "author": "AIC2025参赛团队",
+  "capabilities": [
+    {
+      "name": "跨学科协商问答",
+      "description": "对涉及多个学科的复杂问题进行智能分析和协商解答",
+      "inputFormat": "自然语言文本问题",
+      "outputFormat": "综合多学科专家意见的详细解答"
+    }
+  ],
+  "subjects": [
+    "数学",
+    "物理",
+    "化学",
+    "生物",
+    "英语",
+    "语文"
+  ],
+  "endpoints": {
+    "health": "/health",
+    "metadata": "/acs/metadata",
+    "rpc": "/aip/rpc",
+    "negotiate": "/negotiate"
+  },
+  "protocol": {
+    "type": "AIP",
+    "version": "1.0"
+  }
+}

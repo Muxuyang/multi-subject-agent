@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多学科智能体协商辅导系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #0A0D12 0%, #161D2B 100%);
+            color: #e8eaed;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: #0F131C;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            color: #38BDF8;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            font-size: 1rem;
+        }
+
+        .agent-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .agent-card {
+            background: #1E2636;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2a3548;
+        }
+
+        .agent-card.online {
+            border-color: #6EE7B7;
+        }
+
+        .agent-card.offline {
+            border-color: #ef4444;
+        }
+
+        .agent-name {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .status-dot.online {
+            background: #6EE7B7;
+            box-shadow: 0 0 8px #6EE7B7;
+        }
+
+        .status-dot.offline {
+            background: #ef4444;
+        }
+
+        .question-area {
+            background: #0F131C;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 16px;
+            background: #1E2636;
+            border: 1px solid #2a3548;
+            border-radius: 12px;
+            color: #e8eaed;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #38BDF8;
+        }
+
+        button {
+            padding: 16px 32px;
+            background: #38BDF8;
+            color: #0A0D12;
+            border: none;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background: #2a3548;
+            color: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-area {
+            background: #0F131C;
+            padding: 30px;
+            border-radius: 16px;
+            display: none;
+        }
+
+        .result-area.show {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #2a3548;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #38BDF8;
+        }
+
+        .involved-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 16px;
+            background: #1E2636;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            border: 1px solid #6EE7B7;
+            color: #6EE7B7;
+        }
+
+        .negotiated-answer {
+            background: #1E2636;
+            padding: 24px;
+            border-radius: 12px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+        }
+
+        .subject-answers {
+            display: grid;
+            gap: 16px;
+        }
+
+        .subject-answer {
+            background: #1E2636;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 3px solid #38BDF8;
+        }
+
+        .subject-answer-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #38BDF8;
+        }
+
+        .subject-answer-content {
+            color: #d1d5db;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 3px solid #2a3548;
+            border-top: 3px solid #38BDF8;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #7f1d1d;
+            padding: 16px 24px;
+            border-radius: 12px;
+            border-left: 3px solid #ef4444;
+            margin-top: 16px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>多学科智能体协商辅导系统</h1>
+            <p class="subtitle">Multi-Subject Agent Negotiation System</p>
+        </header>
+
+        <div class="agent-status" id="agentStatus">
+            <!-- 动态加载智能体状态 -->
+        </div>
+
+        <div class="question-area">
+            <div class="input-group">
+                <textarea id="questionInput" placeholder="请输入您的问题，例如：光合作用的化学方程式中能量转化效率是多少？"></textarea>
+                <button id="askButton" onclick="askQuestion()">提问</button>
+            </div>
+        </div>
+
+        <div class="result-area" id="resultArea">
+            <div class="result-header">
+                <div class="result-title">协商结果</div>
+                <div class="involved-tags" id="involvedTags"></div>
+            </div>
+
+            <div class="negotiated-answer" id="negotiatedAnswer"></div>
+
+            <details open>
+                <summary style="cursor: pointer; padding: 12px; background: #1E2636; border-radius: 8px; margin-bottom: 16px;">
+                    <strong>📋 各学科详细分析</strong>
+                </summary>
+                <div class="subject-answers" id="subjectAnswers"></div>
+            </details>
+        </div>
+
+        <footer>
+            <p>🤖 基于 AIP 协议的智能体互联系统 | 2026 AIC竞赛作品</p>
+        </footer>
+    </div>
+
+    <script>
+        // 加载智能体状态
+        async function loadAgentStatus() {
+            try {
+                const response = await fetch('/agents');
+                const data = await response.json();
+
+                const statusHtml = data.agents.map(agent => `
+                    <div class="agent-card ${agent.status}">
+                        <div class="agent-name">${agent.name}</div>
+                        <div>
+                            <span class="status-dot ${agent.status}"></span>
+                            <span>${agent.status === 'online' ? '在线' : '离线'}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('agentStatus').innerHTML = statusHtml;
+            } catch (error) {
+                console.error('加载智能体状态失败:', error);
+            }
+        }
+
+        // 提问
+        async function askQuestion() {
+            const questionInput = document.getElementById('questionInput');
+            const askButton = document.getElementById('askButton');
+            const resultArea = document.getElementById('resultArea');
+            const question = questionInput.value.trim();
+
+            if (!question) {
+                alert('请输入问题');
+                return;
+            }
+
+            // 显示加载状态
+            askButton.disabled = true;
+            askButton.textContent = '思考中...';
+            resultArea.classList.add('show');
+            resultArea.innerHTML = '<div class="loading"><div class="spinner"></div><p>各学科智能体正在协商...</p></div>';
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question })
+                });
+
+                if (!response.ok) {
+                    throw new Error('请求失败');
+                }
+
+                const data = await response.json();
+                displayResult(data);
+            } catch (error) {
+                resultArea.innerHTML = `<div class="error">❌ 请求失败: ${error.message}</div>`;
+            } finally {
+                askButton.disabled = false;
+                askButton.textContent = '提问';
+            }
+        }
+
+        // 显示结果
+        function displayResult(data) {
+            // 涉及学科标签
+            const tagsHtml = data.involved_subjects.map(subject =>
+                `<span class="tag">${subject}</span>`
+            ).join('');
+
+            // 各学科答案
+            const answersHtml = Object.entries(data.subject_answers).map(([subject, answer]) => `
+                <div class="subject-answer">
+                    <div class="subject-answer-title">${subject}</div>
+                    <div class="subject-answer-content">${answer}</div>
+                </div>
+            `).join('');
+
+            // 更新DOM
+            document.getElementById('resultArea').innerHTML = `
+                <div class="result-header">
+                    <div class="result-title">协商结果</div>
+                    <div class="involved-tags">${tagsHtml}</div>
+                </div>
+
+                <div class="negotiated-answer">${data.negotiated_answer}</div>
+
+                <details open>
+                    <summary style="cursor: pointer; padding: 12px; background: #1E2636; border-radius: 8px; margin-bottom: 16px;">
+                        <strong>📋 各学科详细分析</strong>
+                    </summary>
+                    <div class="subject-answers">${answersHtml}</div>
+                </details>
+            `;
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', () => {
+            loadAgentStatus();
+            // 每30秒刷新智能体状态
+            setInterval(loadAgentStatus, 30000);
+        });
+
+        // Enter键提交
+        document.getElementById('questionInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                askQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
