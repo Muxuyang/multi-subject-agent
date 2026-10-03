@@ -393,6 +393,7 @@ if __name__ == "__main__":
     import uvicorn
     import sys
     sys.stdout.reconfigure(encoding='utf-8')
-    port = int(os.getenv("ORCHESTRATOR_PORT", 8000))
+    # Railway uses PORT, fallback to ORCHESTRATOR_PORT for local dev
+    port = int(os.getenv("PORT", os.getenv("ORCHESTRATOR_PORT", "8000")))
     print(f"Orchestrator starting on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
